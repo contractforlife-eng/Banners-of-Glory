@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://b77xja7skbqac" path="res://Kingdom Map.jpg" id="2_deu6t"]
 [ext_resource type="Script" path="res://map_camera.gd" id="3_camera"]
 [ext_resource type="Script" path="res://palace_info_panel.gd" id="4_panel"]
+[ext_resource type="PackedScene" path="res://scenes/entities/cannon_emplacement.tscn" id="5_canon"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_palace"]
 size = Vector2(1250, 1250)
@@ -41,6 +42,33 @@ texture = ExtResource("2_4ojr4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/ClickArea"]
 shape = SubResource("RectangleShape2D_palace")
+
+[node name="Cannons" type="Node2D" parent="."]
+position = Vector2(577.3588, 320.13358)
+
+[node name="CannonNW" parent="Cannons" instance=ExtResource("5_canon")]
+position = Vector2(-90, -45)
+cannon_id = "cannon_nw"
+display_name = "North-West Cannon"
+compass_position = "NW"
+
+[node name="CannonNE" parent="Cannons" instance=ExtResource("5_canon")]
+position = Vector2(90, -45)
+cannon_id = "cannon_ne"
+display_name = "North-East Cannon"
+compass_position = "NE"
+
+[node name="CannonSW" parent="Cannons" instance=ExtResource("5_canon")]
+position = Vector2(-90, 45)
+cannon_id = "cannon_sw"
+display_name = "South-West Cannon"
+compass_position = "SW"
+
+[node name="CannonSE" parent="Cannons" instance=ExtResource("5_canon")]
+position = Vector2(90, 45)
+cannon_id = "cannon_se"
+display_name = "South-East Cannon"
+compass_position = "SE"
 
 [node name="MapCamera2D" type="Camera2D" parent="."]
 position = Vector2(577.3588, 320.13358)
@@ -96,6 +124,13 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
 theme_override_font_sizes/font_size = 14
 text = "Controlling alliance: None"
+
+[node name="TargetLabel" type="Label" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.7, 0.35, 1)
+theme_override_font_sizes/font_size = 13
+text = "Target: Great Palace"
 
 [node name="ControlSpacer" type="Control" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 4)

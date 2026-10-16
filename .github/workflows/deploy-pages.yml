@@ -1,0 +1,69 @@
+name: Deploy Godot Web to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  export_game:
+    runs-on: ubuntu-latest
+    name: Export Godot Web Release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Godot Engine
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.2
+          use-dotnet: false
+          include-templates: true
+
+      - name: Verify Godot & Templates
+        run: |
+          godot --version
+          ls -la ~/.local/share/godot/export_templates/ || true
+
+      - name: Create export directory
+        run: mkdir -p build/web
+
+      - name: Import project resources
+        run: godot --headless --editor --quit
+
+      - name: Export Web Release
+        run: godot --headless --export-release "Web" build/web/index.html
+
+      - name: Verify Web Export Artifacts
+        run: |
+          ls -lh build/web/
+          test -f build/web/index.html || exit 1
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: export_game
+    runs-on: ubuntu-latest
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
