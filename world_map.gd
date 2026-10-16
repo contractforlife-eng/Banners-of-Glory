@@ -40,6 +40,7 @@ func _setup_cannons() -> void:
 
 	for child in cannons_container.get_children():
 		if child is CannonEmplacement:
+			child.aim_at_target(great_palace.position)
 			child.clicked.connect(_on_cannon_clicked)
 
 func _calculate_map_bounds() -> Rect2:
