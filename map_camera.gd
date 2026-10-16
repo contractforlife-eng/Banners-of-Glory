@@ -37,8 +37,11 @@ func _ready() -> void:
 func set_map_bounds(rect: Rect2) -> void:
 	map_bounds = rect
 	_update_overview_zoom()
-	_clamp_target_position()
-	position = target_position
+	# Automatically show the entire map centered on initial load
+	zoom = overview_zoom
+	target_zoom = overview_zoom
+	position = map_bounds.get_center()
+	target_position = position
 
 func _on_viewport_size_changed() -> void:
 	_update_overview_zoom()
@@ -80,7 +83,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					is_mouse_dragging = false
 					# If mouse was released within drag threshold, treat as terrain click
 					if total_drag < drag_threshold_pixels:
-						var clicked_world_pos: Vector2 = get_global_mouse_position()
+						var clicked_world_pos: Vector2 = get_canvas_transform().affine_inverse() * event.position
 						terrain_clicked.emit(clicked_world_pos)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
 			_zoom_at_screen_pos(1.0 + zoom_factor, event.position)
@@ -112,7 +115,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			var touch_dist: float = (event.position - touch_start_pos).length()
 			# Only emit tap if single touch never escalated to multi-touch and did not drag
 			if active_touches.size() == 1 and is_touch_panning and not had_multi_touch and touch_dist < drag_threshold_pixels:
-				var clicked_world_pos: Vector2 = (event.position - (get_viewport_rect().size * 0.5)) / zoom + position
+				var clicked_world_pos: Vector2 = get_canvas_transform().affine_inverse() * event.position
 				terrain_clicked.emit(clicked_world_pos)
 
 			active_touches.erase(event.index)
