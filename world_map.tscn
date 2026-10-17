@@ -4,35 +4,16 @@
 [ext_resource type="Texture2D" uid="uid://brg8ethc60loc" path="res://great_palace.png" id="2_4ojr4"]
 [ext_resource type="Texture2D" uid="uid://b77xja7skbqac" path="res://Kingdom Map.jpg" id="2_deu6t"]
 [ext_resource type="Script" path="res://map_camera.gd" id="3_camera"]
-[ext_resource type="Script" path="res://palace_info_panel.gd" id="4_panel"]
 [ext_resource type="Texture2D" path="res://assets/map_icon.svg" id="6_map_icon"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_palace"]
-size = Vector2(1250, 1250)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.101961, 0.090196, 0.082353, 0.92)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.85, 0.7, 0.35, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-shadow_color = Color(0, 0, 0, 0.4)
-shadow_size = 4
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_btn"]
 
 [node name="Node2D" type="Node2D" unique_id=340409826]
-position = Vector2(2.6411743, 0.2984314)
 script = ExtResource("1_4ojr4")
 
 [node name="KingdomMap2" type="Sprite2D" parent="." unique_id=1437032738]
 position = Vector2(577.3588, 320.13358)
-scale = Vector2(0.45490506, 0.3803868)
+scale = Vector2(0.4549, 0.4549)
 texture = ExtResource("2_deu6t")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=213579393]
@@ -40,75 +21,11 @@ position = Vector2(563.3588, 306.70157)
 scale = Vector2(0.066331245, 0.068461515)
 texture = ExtResource("2_4ojr4")
 
-[node name="ClickArea" type="Area2D" parent="Sprite2D"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/ClickArea"]
-shape = SubResource("RectangleShape2D_palace")
-
 [node name="MapCamera2D" type="Camera2D" parent="."]
 position = Vector2(577.3588, 320.13358)
 script = ExtResource("3_camera")
 
 [node name="UI" type="CanvasLayer" parent="."]
-
-[node name="PalaceInfoPanel" type="PanelContainer" parent="UI"]
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -140.0
-offset_top = -90.0
-offset_right = 140.0
-offset_bottom = 90.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
-script = ExtResource("4_panel")
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/PalaceInfoPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 14
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/PalaceInfoPanel/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="TitleLabel" type="Label" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.843, 0.3, 1)
-theme_override_font_sizes/font_size = 18
-text = "Great Palace"
-horizontal_alignment = 1
-
-[node name="HSeparator" type="HSeparator" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="StatusLabel" type="Label" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
-theme_override_font_sizes/font_size = 14
-text = "Current status: Neutral"
-
-[node name="AllianceLabel" type="Label" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
-theme_override_font_sizes/font_size = 14
-text = "Controlling alliance: None"
-
-[node name="ControlSpacer" type="Control" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 4)
-layout_mode = 2
-
-[node name="CloseButton" type="Button" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(80, 28)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Close"
 
 [node name="OverviewButton" type="Button" parent="UI"]
 anchors_preset = 3

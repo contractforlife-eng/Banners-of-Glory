@@ -1,0 +1,128 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ground_map.gd" id="1_ground"]
+[ext_resource type="Script" path="res://map_camera.gd" id="2_camera"]
+[ext_resource type="Script" path="res://palace_info_panel.gd" id="3_panel"]
+[ext_resource type="Texture2D" path="res://great_palace.png" id="4_palace"]
+[ext_resource type="Texture2D" path="res://assets/map_icon.svg" id="5_icon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.101961, 0.090196, 0.082353, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.7, 0.35, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 4
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_btn"]
+
+[node name="GroundMap" type="Node2D"]
+script = ExtResource("1_ground")
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+
+[node name="Palace" type="Sprite2D" parent="."]
+texture = ExtResource("4_palace")
+
+[node name="MapCamera2D" type="Camera2D" parent="."]
+script = ExtResource("2_camera")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="CoordLabel" type="Label" parent="UI"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 420.0
+offset_bottom = 64.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 16
+text = "X:0  Y:0"
+
+[node name="PalaceInfoPanel" type="PanelContainer" parent="UI"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -90.0
+offset_right = 140.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+script = ExtResource("3_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/PalaceInfoPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PalaceInfoPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.843, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "Great Palace"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "Current status: Neutral"
+
+[node name="AllianceLabel" type="Label" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "Controlling alliance: None"
+
+[node name="ControlSpacer" type="Control" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="UI/PalaceInfoPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(80, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Close"
+
+[node name="BackButton" type="Button" parent="UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -76.0
+offset_top = -76.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_btn")
+icon = ExtResource("5_icon")
+icon_alignment = 1
+expand_icon = true

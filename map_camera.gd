@@ -9,6 +9,10 @@ signal terrain_clicked(world_position: Vector2)
 @export var zoom_smoothness: float = 16.0
 @export var pan_smoothness: float = 20.0
 @export var drag_threshold_pixels: float = 8.0
+## If true, min_zoom is set so the whole map fits the screen (overview map).
+@export var fit_overview_as_min_zoom: bool = true
+## Keyboard panning speed (arrows / WASD) in screen pixels per second.
+@export var key_pan_speed: float = 900.0
 
 var target_zoom: Vector2 = Vector2.ONE
 var target_position: Vector2 = Vector2.ZERO
@@ -34,14 +38,24 @@ func _ready() -> void:
 	target_position = position
 	get_viewport().size_changed.connect(_on_viewport_size_changed)
 
-func set_map_bounds(rect: Rect2) -> void:
+func set_map_bounds(rect: Rect2, reset_view: bool = true) -> void:
 	map_bounds = rect
 	_update_overview_zoom()
-	# Automatically show the entire map centered on initial load
-	zoom = overview_zoom
-	target_zoom = overview_zoom
-	position = map_bounds.get_center()
-	target_position = position
+	if reset_view:
+		# Automatically show the entire map centered on initial load
+		zoom = overview_zoom
+		target_zoom = overview_zoom
+		position = map_bounds.get_center()
+		target_position = position
+
+## Jump instantly to a world position and zoom level (no smoothing).
+func set_view(world_pos: Vector2, zoom_value: float) -> void:
+	var z: float = clampf(zoom_value, min_zoom, max_zoom)
+	target_zoom = Vector2(z, z)
+	zoom = target_zoom
+	target_position = world_pos
+	_clamp_target_position()
+	position = target_position
 
 func _on_viewport_size_changed() -> void:
 	_update_overview_zoom()
@@ -56,7 +70,8 @@ func _update_overview_zoom() -> void:
 	var fit_y: float = viewport_size.y / map_bounds.size.y
 	var fit_zoom_val: float = minf(fit_x, fit_y)
 	overview_zoom = Vector2(fit_zoom_val, fit_zoom_val)
-	min_zoom = fit_zoom_val
+	if fit_overview_as_min_zoom:
+		min_zoom = fit_zoom_val
 
 func focus_on_location(world_pos: Vector2, focus_zoom: float = 1.8) -> void:
 	var clamped_zoom_val: float = clampf(focus_zoom, min_zoom, max_zoom)
@@ -70,6 +85,10 @@ func return_to_overview() -> void:
 	target_position = map_bounds.get_center()
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Touches are also delivered as emulated mouse events; ignore those duplicates.
+	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION:
+		return
+
 	# --- MOUSE INPUT ---
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -92,7 +111,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	elif event is InputEventMouseMotion:
 		if is_mouse_dragging:
-			var mouse_delta: Vector2 = (event.position - mouse_press_pos) / zoom
+			var mouse_delta: Vector2 = (event.position - mouse_press_pos) / target_zoom
 			target_position = drag_start_target_pos - mouse_delta
 			_clamp_target_position()
 
@@ -135,7 +154,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			active_touches[event.index] = event.position
 
 		if active_touches.size() == 1 and is_touch_panning:
-			var touch_delta: Vector2 = (event.position - touch_start_pos) / zoom
+			var touch_delta: Vector2 = (event.position - touch_start_pos) / target_zoom
 			target_position = drag_start_target_pos - touch_delta
 			_clamp_target_position()
 		elif active_touches.size() == 2:
@@ -149,6 +168,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				_zoom_at_screen_pos(factor, midpoint)
 
 func _process(delta: float) -> void:
+	var key_dir := Vector2(
+		float(Input.is_key_pressed(KEY_RIGHT) or Input.is_key_pressed(KEY_D)) - float(Input.is_key_pressed(KEY_LEFT) or Input.is_key_pressed(KEY_A)),
+		float(Input.is_key_pressed(KEY_DOWN) or Input.is_key_pressed(KEY_S)) - float(Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_W)))
+	if key_dir != Vector2.ZERO:
+		target_position += key_dir.normalized() * key_pan_speed * delta / target_zoom.x
+		_clamp_target_position()
 	if zoom != target_zoom:
 		zoom = zoom.lerp(target_zoom, clampf(zoom_smoothness * delta, 0.0, 1.0))
 	if position != target_position:
